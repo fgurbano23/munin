@@ -19,28 +19,56 @@
     <br>
     <br>
 
-    <div>dsadasa</div>
-
     <button mat-raised-button (click)="take()">Tomar foto</button>
 
-    <button mat-raised-button (click)="startRecording()">Grabar</button>
-    <button mat-raised-button (click)="stopRecording()">Parar</button>
+    <button mat-raised-button (click)="startRecording()" color="primary"
+            [disabled]="recording">
+      Grabar
+      <mat-icon fontIcon="graphic_eq"></mat-icon>
+    </button>
+    <button mat-raised-button (click)="stopRecording()" color="warn">Parar</button>
 
 
-    @if (audio) {
-      <button (click)="playRecord()"></button>
+    @if (audioClips) {
+      @for (audio of audioClips; track audio.value.recordDataBase64) {
+        <div>
+          <div style="position: relative"
+               class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+            <button (click)="deleteClip($index)" style="position: absolute; right: 0">X</button>
+            <div class="flex flex-row justify-around">
+              <p>{{ audio.value.msDuration }}</p>
+              <button (click)="playRecord(audio)">
+                <mat-icon fontIcon="music_note"></mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-row border">
+
+        </div>
+      }
+
     }
     <!--    @if (error) {-->
     <!--      <p>Error {{ error }}</p>-->
     <!--    }-->
 
-    @if (photo) {
-      <p>{{ photo | json }}</p>
-    }
+    <!--    @if (photo) {-->
+    <!--      <p>{{ photo | json }}</p>-->
+    <!--    }-->
 
-    @if (data) {
-      <p>{{ data |json }}</p>
-      <img [src]="data" alt="img" width="250" height="250">
+    @if (images) {
+      <div class="flex flex-row flex-shrink">
+        @for (img of images; track img) {
+          <div>
+            <div style="position: relative">
+              <button (click)="deleteImage($index)" style="position: absolute; right: 0">X</button>
+              <img [src]="img" alt="img" width="80" height="80" class="m-5">
+            </div>
+          </div>
+        }
+      </div>
     }
 
     <!--    @if (blob) {-->

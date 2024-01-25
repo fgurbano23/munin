@@ -18,6 +18,7 @@ import { AsyncPipe, JsonPipe, NgOptimizedImage } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { RecordingData, VoiceRecorder } from 'capacitor-voice-recorder';
+import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 
 @Component({
   selector: 'app-create-report',
@@ -33,6 +34,7 @@ import { RecordingData, VoiceRecorder } from 'capacitor-voice-recorder';
     AsyncPipe,
     NgOptimizedImage,
     JsonPipe,
+    MatIcon,
   ],
   templateUrl: './create-report.component.html',
   styleUrl: './create-report.component.scss',
@@ -51,7 +53,8 @@ export class CreateReportComponent implements OnInit {
 
   audio: any = null;
 
-  directoryFileNames: any[] = [];
+  images: string[] = [];
+  audioClips: RecordingData[] = [];
 
   form: FormGroup<CreateReportFormInterface> =
     this.fb.group<CreateReportFormInterface>({
@@ -62,6 +65,7 @@ export class CreateReportComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private platform: Platform,
+    public matIconRegistry: MatIconRegistry,
   ) {}
 
   async ngOnInit() {
@@ -77,7 +81,10 @@ export class CreateReportComponent implements OnInit {
         source: CameraSource.Camera,
         resultType: CameraResultType.Uri,
       });
+
       if (photo) {
+        this.images.push(photo.webPath!);
+
         this.photo = photo.webPath;
         this.data = photo.webPath;
       }
@@ -99,22 +106,31 @@ export class CreateReportComponent implements OnInit {
       return;
     }
 
+    this.recording = false;
     VoiceRecorder.stopRecording().then(async (result: RecordingData) => {
       if (result.value && result.value.recordDataBase64) {
-        this.audio = result.value.recordDataBase64;
+        this.audioClips.push(result);
       }
     });
   }
 
-  async playRecord() {
+  async playRecord(audio: RecordingData) {
     try {
       const audioRef = new Audio(
-        `data:audio/webm;codecs=opus;base64, ${this.audio}`,
+        `data:audio/webm;codecs=opus;base64, ${audio.value.recordDataBase64}`,
       );
       audioRef.oncanplaythrough = () => audioRef.play();
       audioRef.load();
     } catch (e) {
       console.log(e);
     }
+  }
+
+  deleteClip(index: number) {
+    this.audioClips.splice(index, 1);
+  }
+
+  deleteImage(index: number) {
+    this.images.splice(index, 1);
   }
 }
