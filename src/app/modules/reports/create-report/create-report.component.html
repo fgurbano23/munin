@@ -18,9 +18,36 @@
     </mat-card>
     <br>
     <br>
-    <p>Error {{ error }}</p>
+
+    <div>dsadasa</div>
+
     <button mat-raised-button (click)="take()">Tomar foto</button>
-    <p>La data: {{ data  | json }}</p>
+
+    <button mat-raised-button (click)="startRecording()">Grabar</button>
+    <button mat-raised-button (click)="stopRecording()">Parar</button>
+
+
+    @if (audio) {
+      <button (click)="playRecord()"></button>
+    }
+    <!--    @if (error) {-->
+    <!--      <p>Error {{ error }}</p>-->
+    <!--    }-->
+
+    @if (photo) {
+      <p>{{ photo | json }}</p>
+    }
+
+    @if (data) {
+      <p>{{ data |json }}</p>
+      <img [src]="data" alt="img" width="250" height="250">
+    }
+
+    <!--    @if (blob) {-->
+    <!--      <p>Blob: {{ blob }}</p>-->
+    <!--    }-->
+
+
   </div>
 
 </div>

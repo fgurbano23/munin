@@ -10,12 +10,12 @@ export const routes: Routes = [
       import('./modules/home/home.component').then((m) => m.HomeComponent),
   },
   {
-    path: '',
+    path: 'login',
     pathMatch: 'full',
     component: LoginComponent,
   },
   {
-    path: 'report',
+    path: '',
     pathMatch: 'full',
     component: CreateReportComponent,
   },

@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import {
@@ -12,17 +12,12 @@ import { CreateReportFormInterface } from './models/create-report-form.interface
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
 
-import {
-  Camera,
-  CameraPhoto,
-  CameraResultType,
-  CameraSource,
-  Photo,
-} from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe, JsonPipe, NgOptimizedImage } from '@angular/common';
-import { CapacitorPlatform } from '@capacitor/core/types/platforms';
 import { Platform } from '@angular/cdk/platform';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { RecordingData, VoiceRecorder } from 'capacitor-voice-recorder';
 
 @Component({
   selector: 'app-create-report',
@@ -42,14 +37,21 @@ import { Platform } from '@angular/cdk/platform';
   templateUrl: './create-report.component.html',
   styleUrl: './create-report.component.scss',
 })
-export class CreateReportComponent {
+export class CreateReportComponent implements OnInit {
   @ViewChild('canvas') canvasElement!: TemplateRef<HTMLCanvasElement>;
 
   private image = new BehaviorSubject<any>('');
   image$ = this.image.asObservable();
 
+  recording = false;
   data: any = null;
+  photo: any = null;
   error: any = null;
+  blob: any = null;
+
+  audio: any = null;
+
+  directoryFileNames: any[] = [];
 
   form: FormGroup<CreateReportFormInterface> =
     this.fb.group<CreateReportFormInterface>({
@@ -62,28 +64,57 @@ export class CreateReportComponent {
     private platform: Platform,
   ) {}
 
+  async ngOnInit() {
+    await VoiceRecorder.requestAudioRecordingPermission();
+  }
+
   async take() {
     try {
       const photo = await Camera.getPhoto({
+        width: 500,
+        quality: 50,
+        saveToGallery: true,
         source: CameraSource.Camera,
         resultType: CameraResultType.Uri,
       });
       if (photo) {
-        const res = await fetch(photo.webPath!);
-        const blob = await res.blob();
-        const b64 = await this.blobToBase64(blob);
-        this.data = b64;
+        this.photo = photo.webPath;
+        this.data = photo.webPath;
       }
     } catch (e) {
       this.error = e;
     }
   }
 
-  blobToBase64(blob: Blob) {
-    return new Promise((resolve, _) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
+  async startRecording() {
+    if (this.recording) {
+      return;
+    }
+    this.recording = true;
+    VoiceRecorder.startRecording();
+  }
+
+  stopRecording() {
+    if (!this.recording) {
+      return;
+    }
+
+    VoiceRecorder.stopRecording().then(async (result: RecordingData) => {
+      if (result.value && result.value.recordDataBase64) {
+        this.audio = result.value.recordDataBase64;
+      }
     });
+  }
+
+  async playRecord() {
+    try {
+      const audioRef = new Audio(
+        `data:audio/webm;codecs=opus;base64, ${this.audio}`,
+      );
+      audioRef.oncanplaythrough = () => audioRef.play();
+      audioRef.load();
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
