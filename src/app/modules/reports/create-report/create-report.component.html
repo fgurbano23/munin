@@ -1,0 +1,26 @@
+<div class="grid grid-cols-4">
+  <div class="col-span-4">
+    <div class="text-4xl font-black mb-5"> Nuevo reporte</div>
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="form" class="flex flex-col justify-center">
+          <mat-form-field appearance="fill">
+            <mat-label>Asunto</mat-label>
+            <input matInput formControlName="issue" />
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput placeholder="Ingresa..." formControlName="description"></textarea>
+          </mat-form-field>
+          <button mat-raised-button color="primary">Enviar</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <button mat-raised-button (click)="take()">Tomar foto</button>
+    <p>La data: {{ data  | json }}</p>
+  </div>
+
+</div>
+
+<canvas #canvas></canvas>
+

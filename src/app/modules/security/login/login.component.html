@@ -1,0 +1,31 @@
+<h1 class="flex justify-center mb-0">SIGN IN</h1>
+
+@if (authenticationFailed$ | async) {
+  <div
+    class="bg-red-100 border border-red-400 text-red-700 px-4 py-6 rounded my-6"
+    role="alert"
+  >
+    <strong class="font-bold">Holy smokes!</strong>
+    <span class="block sm:inline">Something seriously bad happened.</span>
+    <span class="absolute top-0 bottom-0 right-0 px-4 py-3"> </span>
+  </div>
+}
+
+<form [formGroup]="form" class="flex flex-col items-center">
+  <mat-form-field appearance="fill">
+    <mat-label>Usuario</mat-label>
+    <input matInput formControlName="user" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Contraseña</mat-label>
+    <input matInput type="password" formControlName="password" />
+  </mat-form-field>
+  <a [routerLink]="['/home']">¿Olvidaste tu contraseña?</a>
+  <br />
+</form>
+
+<div class="flex justify-center">
+  <button (click)="login()" mat-raised-button type="submit" color="primary">
+    Iniciar sesión
+  </button>
+</div>
