@@ -36,7 +36,7 @@
                class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
             <button (click)="deleteClip($index)" style="position: absolute; right: 0">X</button>
             <div class="flex flex-row justify-around">
-              <p>{{ audio.value.msDuration }}</p>
+              <p>{{ audio.value.msDuration | seconds }}</p>
               <button (click)="playRecord(audio)">
                 <mat-icon fontIcon="music_note"></mat-icon>
               </button>
@@ -50,6 +50,10 @@
       }
 
     }
+    <div>Status: {{ speechListening }}</div>
+    <div id="speechText"></div>
+    <div [innerHTML]="(obs$ | async)"></div>
+
     <!--    @if (error) {-->
     <!--      <p>Error {{ error }}</p>-->
     <!--    }-->
